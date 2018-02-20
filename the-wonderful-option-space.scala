@@ -1,13 +1,13 @@
-def toIntOption(value: String): Option[Int] = {
+def toDoubleOption(value: String): Option[Double] = {
   try {
-    Some(value.toInt)
+    Some(value.toDouble)
   } catch {
     case e: Exception => None
   }
 }
 
 
-def divide(a: Int, b: Int): Option[Int] = {
+def divide(a: Double, b: Double): Option[Double] = {
   (a,b) match {
     case (_,0) => None
     case _ => Some(a/b)
@@ -15,18 +15,24 @@ def divide(a: Int, b: Int): Option[Int] = {
 }
 
 
-def plus(a: Int, b: Int): Option[Int] = {
+def plus(a: Double, b: Double): Option[Double] = {
   Some(a+b)
 }
 
+def Add100EachAndThenFoldDivide(str:String) = {
+  val splitedValues = str.split(",")
+  val add100function = plus(_, 100)
 
-val v = "100,50,-100"
-
-v.split(",").map(toIntOption).flatMap(_.map(plus(_,100))).
-  fold(Some(1))((acc,value)=>{
-    (acc,value) match {
-      case (Some(a: Int), Some (b: Int)) => divide (a, b)
-      case _=> None
+  val convertedValues = splitedValues.map(toDoubleOption)
+  val valuesIncreasedBy100 = convertedValues.map(_.flatMap(add100function))
+  val foldDivideValue = valuesIncreasedBy100.fold(Some(1.0))((acc, value) => {
+    (acc, value) match {
+      case (Some(a: Double), Some(b: Double)) => divide(a, b)
+      case _ => None
     }
   })
-
+  foldDivideValue
+}
+Add100EachAndThenFoldDivide("100,50,1000,60,64.5") //Some(1.1513309385649811E-12)
+Add100EachAndThenFoldDivide("100,50,1000,BLA,60,64.5") //res1: Option[Double] = None
+Add100EachAndThenFoldDivide("100,50,-100") //res1: Option[Double] = None
