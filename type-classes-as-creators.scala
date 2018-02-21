@@ -13,7 +13,7 @@ def doSomeLogicAndReturnAnEvent[T]()(implicit eventCreator: EventCreator[T]): Se
 }
 //functions that know to create events from (String, Int, String)
 implicit val eventACreator: EventCreator[EventA] = EventA.apply
-implicit val eventBCreator = EventB(_, _, _)//Sugar syntax to: (x:String,y:Int,z:String)=>(x:String,y:Int,z:String) => EventB(x,y,z)
+implicit val eventBCreator = EventB(_, _, _)//Sugar syntax to: (x:String,y:Int,z:String) => EventB(x,y,z)
 implicit val eventCCreator = EventC(_: String, _: Int, _: String, "aConstField")
 
 doSomeLogicAndReturnAnEvent[EventA]() //Seq[EventA] = Vector(EventA(1,1,1), EventA(2,2,2), EventA(3,3,3))
