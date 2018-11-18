@@ -9,6 +9,12 @@ implicit class App[A, B](ctor: Try[A => B]) {
       case (Failure(e1), _) => Failure(e1)
       case (_, Failure(e2)) => Failure(e2)
     }
+
+  def tryAppLazy(value: => Try[A]) =
+    ctor match {
+      case Failure(exception) => Failure(exception)
+      case Success(f) => value.map(f)
+    }
 }
 
 
@@ -17,6 +23,12 @@ object Person{
   def apply(name: String, age: Int): Try[Person] = {
     Try(Person.curried) tryApp
       tryGetName(name) tryApp
+      tryGetAge(age)
+  }
+
+  def applyLazy(name: String, age: Int): Try[Person] = {
+    Try(Person.curried) tryAppLazy
+      tryGetName(name) tryAppLazy
       tryGetAge(age)
   }
 }
@@ -41,3 +53,6 @@ Person("John Doe", 35) //Success(Person(John Doe,35))
 Person("John Doe!!!", 35) //Failure(Exception: John Doe!!! is not a valid name)
 Person("John Doe", -3) //Failure(Exception: -3 is not a valid age)
 Person("John Doe!!!", -3) //Failure(Exception: John Doe!!! is not a valid name, -3 is not a valid age)
+
+
+Person.applyLazy("John Doe", 150) //Failure(Exception: 150 is not a valid age)
